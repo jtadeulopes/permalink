@@ -19,7 +19,7 @@ module Permalink
           }
 
           before_validation :create_permalink
-          before_save :create_permalink
+          before_save :create_permalink, :update_permalink
         end
       end
 
@@ -60,6 +60,10 @@ module Permalink
           self.class.permalink_options[:to_column_name]
         end
 
+        def force_permalink?
+          self.class.permalink_options[:force]
+        end
+
         def from_permalink_value
           read_attribute(from_permalink_name)
         end
@@ -68,15 +72,14 @@ module Permalink
           read_attribute(to_permalink_name)
         end
 
-        def force_permalink?
-          self.class.permalink_options[:force]
-        end
-
         def create_permalink
-          write_attribute(to_permalink_name, nil) if force_permalink?
           unless from_permalink_value.blank? || !to_permalink_value.blank?
             write_attribute(to_permalink_name, next_available_permalink(from_permalink_value.to_s.to_permalink))
           end
+        end
+
+        def update_permalink
+          write_attribute(to_permalink_name, next_available_permalink(from_permalink_value.to_s.to_permalink)) if force_permalink?
         end
       end
     end
