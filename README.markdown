@@ -17,7 +17,7 @@ Add the method call `permalink` to your model. Your model should have a `permali
 
 You can specify the permalink field:
 
-    class page < ActiveRecord::Base
+    class Page < ActiveRecord::Base
       permalink :title, :to => :title_permalink
     end
 
@@ -48,6 +48,12 @@ The permalink is generated using `ActiveSupport::Multibyte::Chars` class; this m
 
 The permalink is created when `before_validation` callback is evaluated. This plugin also tries
 to generate a permalink when `before_save` callback is evaluated and the instance has no permalink set.
+
+You can define :force => true to always generate permalink. Default is false:
+
+    class Page < ActiveRecord::Base
+      permalink :title, :force => true
+    end
 
 ## License
 
