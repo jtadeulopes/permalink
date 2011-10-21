@@ -6,14 +6,16 @@ module Permalink
           options.reverse_merge!(orm_options)
           options.reverse_merge!({
             :to       => :permalink,
-            :unique   => false
+            :unique   => false,
+            :force    => false
           })
 
           self.permalink_options = {
             :from_column_name => from,
             :to_column_name   => options[:to],
             :to_param         => [options[:to_param]].flatten,
-            :unique           => options[:unique]
+            :unique           => options[:unique],
+            :force            => options[:force]
           }
 
           before_validation :create_permalink
@@ -66,7 +68,12 @@ module Permalink
           read_attribute(to_permalink_name)
         end
 
+        def force_permalink?
+          self.class.permalink_options[:force]
+        end
+
         def create_permalink
+          write_attribute(to_permalink_name, nil) if force_permalink?
           unless from_permalink_value.blank? || !to_permalink_value.blank?
             write_attribute(to_permalink_name, next_available_permalink(from_permalink_value.to_s.to_permalink))
           end

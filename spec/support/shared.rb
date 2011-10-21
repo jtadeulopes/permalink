@@ -74,6 +74,30 @@ shared_examples_for "orm" do
     record.permalink.should == "awesome-post"
   end
 
+  it "should force update permalink" do
+    model.permalink :title, :force => true
+
+    record = model.create(:title => "Some nice post", :permalink => "  ")
+    record.permalink.should == "some-nice-post"
+
+    record.title = "another title"
+    record.save
+
+    record.permalink.should == "another-title"
+  end
+
+  it "should force update permalink when use custom attribute" do
+    model.permalink :title, :to => :slug, :force => true
+
+    record = model.create(:title => "Some nice post")
+    record.slug.should == "some-nice-post"
+
+    record.title = "another title"
+    record.save
+
+    record.slug.should == "another-title"
+  end
+
   it "should create unique permalinks for number-ended titles" do
     model.permalink :title, :unique => true
 
